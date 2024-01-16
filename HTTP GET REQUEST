@@ -1,15 +1,50 @@
 import socket
 
-mysock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-mysock.connect(('data.pr4e.org', 80))
+# Constants
+HOST = 'data.pr4e.org'
+PORT = 80
 
+def establish_connection():
+    """Create and connect a socket to the server."""
+    mysock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    mysock.connect((HOST, PORT))
+    return mysock
 
-cmd = 'GET /romeo.txt HTTP/1.1\r\nhost: data.pr4e.org\r\n\r\n'.encode()
-mysock.send(cmd)
+def send_request(sock):
+    """Send an HTTP GET request to the server."""
+    cmd = 'GET /romeo.txt HTTP/1.1\r\nhost: data.pr4e.org\r\n\r\n'.encode()
+    sock.send(cmd)
 
-while True:
-    data = mysock.recv(512)
-    if (len(data) < 1):
-        break
-    print(data.decode())
-mysock.close
+def receive_and_print_response(sock):
+    """Receive and print the server's response."""
+    while True:
+        data = sock.recv(512)
+        if len(data) < 1:
+            break
+        print(data.decode())
+
+def close_connection(sock):
+    """Close the socket connection."""
+    sock.close()
+
+def main():
+    """Main function to execute the code."""
+    try:
+        # Establish connection
+        mysock = establish_connection()
+
+        # Send HTTP request
+        send_request(mysock)
+
+        # Receive and print response
+        receive_and_print_response(mysock)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    finally:
+        # Close the connection
+        close_connection(mysock)
+
+if __name__ == "__main__":
+    main()
