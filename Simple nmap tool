@@ -1,44 +1,67 @@
+#!/usr/bin/env python3
+"""
+Simple nmap automation tool for scanning open ports.
+
+Usage:
+1. SYN ACK Scan
+2. UDP Scan
+3. Comprehensive Scan
+
+Enter the IP address and the type of scan you want to run.
+
+Author: Your Name
+"""
+
 import nmap
 
-scanner = nmap.PortScanner()
+def run_nmap_scan(ip_addr, scan_type):
+    """
+    Run nmap scan based on the selected scan type.
 
-print("Welcome, this is a simple nmap automation tool")
-print("<--------------------------------------------->")
+    Parameters:
+    - ip_addr (str): The IP address to scan.
+    - scan_type (str): The type of scan (1, 2, or 3).
+    """
+    scanner = nmap.PortScanner()
+    
+    print("Nmap Version: ", scanner.nmap_version())
+    
+    if scan_type == '1':
+        scanner.scan(ip_addr, '1-1024', '-v -sS')
+        print("SYN ACK Scan Results:")
+        print(scanner.scaninfo())
+        print("Ip Status: ", scanner[ip_addr].state())
+        print("Open Ports: ", scanner[ip_addr]['tcp'].keys())
+    elif scan_type == '2':
+        scanner.scan(ip_addr, '1-1024', '-v -sU')
+        print("UDP Scan Results:")
+        print(scanner.scaninfo())
+        print("Ip Status: ", scanner[ip_addr].state())
+        print("Open Ports: ", scanner[ip_addr]['udp'].keys())
+    elif scan_type == '3':
+        scanner.scan(ip_addr, '1-1024', '-v -sS -sV -sC -A -O')
+        print("Comprehensive Scan Results:")
+        print(scanner.scaninfo())
+        print("Ip Status: ", scanner[ip_addr].state())
+        print("Open Ports: ", scanner[ip_addr]['tcp'].keys())
+    else:
+        print("Please enter a valid option.")
 
-ip_addr = input("Please enter the IP address you want to scan: ")
-print("The IP you entered is:", ip_addr)
-type(ip_addr)
+def main():
+    print("Welcome, this is a simple nmap automation tool")
+    print("<--------------------------------------------->")
 
-resp = input(""" \nPlease enter the type of scan you want to run
-			1)SYN ACK Scan
-			2)UDP Scan
-			3)Comprehensive Scan""")
-print("You have selected option: ", resp)
+    ip_addr = input("Please enter the IP address you want to scan: ")
+    print("The IP you entered is:", ip_addr)
 
-if resp == "1":
-	print("Nmap Version: ", scanner.nmap_version())
-	scanner.scan(ip_addr, '1-1024', '-v -sS')
-	print(scanner.scaninfo())
-	print("Ip Status: ", scanner[ip_addr].state())
-	print(scanner[ip_addr].all_protocols())
-	print("Open Ports: ", scanner[ip_addr]['tcp'].keys())
-elif resp == "2":
-	print("Nmap Version: ", scanner.nmap_version())
-	scanner.scan(ip_addr, '1-1024', '-v -sS')
-	print(scanner.scaninfo())
-	print("Ip Status: ", scanner[ip_addr].state())
-	print(scanner[ip_addr].all_protocols())
-	print("Open Ports: ", scanner[ip_addr]['udp'].keys())
-elif resp == '3':
-	print("Nmap Version: ", scanner.nmap_version())
-	scanner.scan(ip_addr, '1-1024', '-v -sS -sV -sC -A -O')
-	print(scanner.scaninfo())
-	print("Ip Status: ", scanner[ip_addr].state())
-	print(scanner[ip_addr].all_protocols())
-	print("Open Ports: ", scanner[ip_addr]['tcp'].keys())
-elif resp >= '4':
-	print("Please enter a valid option")
+    scan_type = input(""" \nPlease enter the type of scan you want to run
+                    1) SYN ACK Scan
+                    2) UDP Scan
+                    3) Comprehensive Scan
+                    """)
 
+    print("You have selected option: ", scan_type)
+    run_nmap_scan(ip_addr, scan_type)
 
-
-
+if __name__ == "__main__":
+    main()
