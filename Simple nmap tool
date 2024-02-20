@@ -9,7 +9,7 @@ Usage:
 
 Enter the IP address and the type of scan you want to run.
 
-Author: Your Name
+Author: Ghalwal
 """
 
 import nmap
