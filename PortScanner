@@ -1,0 +1,45 @@
+import asyncio
+import ipaddress 
+
+async def scan_port(target_ip, port, timeout=1):
+    try:
+        # Use asyncio.wait_for to set a timeout for the connection attempt
+        reader, writer = await asyncio.wait_for(asyncio.open_connection(target_ip, port), timeout=timeout)
+        print(f"Port {port} is open")
+        writer.close()
+    except asyncio.TimeoutError:
+        print(f"Port {port} timed out (closed)")
+    except Exception as e:
+        print(f"Error checking port {port}: {e}")
+
+async def port_scan(target_ip, start_port, end_port, timeout=1):
+    print(f"Scanning ports on {target_ip}...\n")
+
+    tasks = [scan_port(target_ip, port, timeout) for port in range(start_port, end_port + 1)]
+
+    await asyncio.gather(*tasks)
+
+    print("Scan completed.")
+
+def is_valid_ip(ip):
+    try:
+        ipaddress.ip_address(ip)
+        return True
+    except ValueError:
+        return False
+    
+def main():
+    target_ip = '127.0.0.1'
+    start_port = 1 
+    end_port = 1024
+    timeout = 1  # Adjust the timeout value as needed
+
+    # Check if the target IP is valid before starting the scan
+    if is_valid_ip(target_ip):
+        asyncio.run(port_scan(target_ip, start_port, end_port, timeout))
+    else:
+        print("Invalid IP address. Please provide a valid IP")
+
+
+if __name__ == '__main__':
+    main()
